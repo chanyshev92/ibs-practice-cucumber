@@ -72,6 +72,12 @@ public class ProductsPage {
     private List<WebElement> buttonsWithText;
 
     /**
+     * Список элементов c id для взаимодействия на форме добавления
+     */
+    @FindBy(xpath = "//div[@id='editModal']//form/div/*[@id]")
+    private List <WebElement> formElementsWithId;
+
+    /**
      * Edit Modal Flag
      */
     @FindBy(id = "editModal")
@@ -80,23 +86,6 @@ public class ProductsPage {
      * Wait flag
      */
     String modalClass;
-
-    /**
-     * Экземпляр класса для Singleton
-     */
-    static ProductsPage productsPage;
-    /***
-     * Метод получения
-     */
-    public static ProductsPage getInstance(WebDriver webDriver){
-        if(productsPage==null){
-            productsPage=new ProductsPage(webDriver);
-        }
-        return productsPage;
-    }
-    public static void setInstanceNull(){
-        productsPage=null;
-    }
 
     /**
      * Конструктор с использованием PageFactory Pattern     *

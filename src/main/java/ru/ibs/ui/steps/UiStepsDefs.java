@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -70,16 +71,14 @@ public class UiStepsDefs {
      */
     @After("@Ui")
     public void after() {
-        //productsPage=null;
-        ProductsPage.setInstanceNull();
+        productsPage=null;
         chromeDriver.quit();
     }
 
     @И("Перейти на страницу \"Товары\"")
     public void getPage(){
         chromeDriver.get(baseUrl);
-        //productsPage = new ProductsPage(chromeDriver);
-        productsPage=ProductsPage.getInstance(chromeDriver);
+        productsPage = new ProductsPage(chromeDriver);
     }
 
     @И("Открыта страница \"Товары\"")
@@ -117,12 +116,6 @@ public class UiStepsDefs {
                 "Идентификатор строки null");
     }
 
-    @И("Отображена кнопка {string}")
-    public void buttonWithTextIsDisplayed(String text){
-        Assertions.assertTrue
-                (productsPage.getButtonByText(text).isDisplayed(),
-                        "Кнопка с текстом "+text+" не отображена");
-    }
     @И("Кнопка {string} имеет текст {string}")
     public void buttonWithTextHasName(String text, String name){
         Assertions.assertEquals(
@@ -161,26 +154,34 @@ public class UiStepsDefs {
                         .isDisplayed(),
                 "Форма добавления не закрыта");
     }
-    @И("Окно содержит поле \"Наименование\"")
-    public void modalWindowContainsNameField(){
+    @И("^Форма содержит (поле|чек-бокс) \"(.*)\"$")
+    public void formContains(String type,String text){
+        boolean displayed=false;
+        switch (text) {
+            case "Экзотический" -> displayed = productsPage
+                    .getFormElementsWithId()
+                    .stream()
+                    .filter(s -> Objects.equals(s.getAttribute("id"), "exotic"))
+                    .toList().get(0).isDisplayed();
+            case "Наименование" -> displayed = productsPage
+                    .getFormElementsWithId()
+                    .stream()
+                    .filter(s -> Objects.equals(s.getAttribute("name"), "name"))
+                    .toList().get(0).isDisplayed();
+            case "Тип" -> displayed = productsPage
+                    .getFormElementsWithId()
+                    .stream()
+                    .filter(s -> Objects.equals(s.getAttribute("id"), "type"))
+                    .toList().get(0).isDisplayed();
+        }
+            Assertions.assertTrue(displayed,"Элемент "+type +text+ " не отображен");
 
-        Assertions.assertTrue(
-                productsPage.getAddProductName()
-                        .isDisplayed(),
-                "Поле ввода 'Наименование' не отображен");
     }
-    @И("Окно содержит поле \"Тип\"")
-    public void modalWindowContainsTypeField(){
 
-        Assertions.assertTrue(
-                productsPage.getAddType()
-                        .isDisplayed(),
-                "Поле ввода 'Тип' не отображен");
-    }
-    @И("В поле \"Тип\" на выбор 2 варианта {string}, {string}")
-    public void checkType(String string1, String string2){
+    @И("В поле \"Тип\" на выбор {int} варианта {string}, {string}")
+    public void checkType(int count,String string1, String string2){
 
-        Assertions.assertTrue(productsPage.getAllAddTypes().size() == 2
+        Assertions.assertTrue(productsPage.getAllAddTypes().size() == count
                         && productsPage.getAllAddTypes()
                         .stream()
                         .map(WebElement::getText)
@@ -188,13 +189,7 @@ public class UiStepsDefs {
                         .containsAll(Arrays.asList(string1, string2)),
                 "Проверки на количество и/или содержимое поля 'Тип' не прошли");
     }
-    @И("Окно содержит чек-бокс \"Экзотический\"")
-    public void checkboxIsDisplayed(){
-        Assertions.assertTrue(
-                productsPage.getAddExoticCheckBox()
-                        .isDisplayed(),
-                "Чек-бокс не отображен");
-    }
+
     @И("Установить чек-бокс \"Экзотический\" {string}")
     public void activateCheckBox(String exotic){
         productsPage.setAddExoticCheckBox(exotic);
@@ -210,12 +205,11 @@ public class UiStepsDefs {
                         .isSelected(),
                 "Чек-бокс активирован");}
     }
-    @И("Окно содержит кнопку \"Сохранить\"")
-    public void containsSaveButton(){
+    @И("Кнопка {string} отображена")
+    public void buttonIsDisplayed(String name){
         Assertions.assertTrue(
-                productsPage.getSaveButton()
-                        .isDisplayed(),
-                "Кнопка 'Сохранить' не отображена");
+                productsPage.getButtonByText(name).isDisplayed(),
+                "Кнопка "+name+" не отображена");
     }
 
     @И("В поле \"Наименование\" ввести значение {string}")
@@ -226,22 +220,42 @@ public class UiStepsDefs {
     public void chooseVariant(String type){
         productsPage.setAddType(type);
     }
-    @И("Введено значение {string} в поле \"Наименование\"")
-    public void checkFieldName(String string){
-        //;
-        Assertions.assertEquals(
-                string, productsPage.getAddProductName()
-                        .getAttribute("value"),
-                "Имя в поле Наименование не соответствует введенному");
-    }
-    @И("Выбрано значение {string} в поле \"Тип\"")
-    public void checkFieldType(String string){
-        Assertions.assertTrue(productsPage
-                        .getAddType().getDomProperty("textContent")
-                        .contains(string),
-                "Тип в поле Тип не соответствует введенному");
-    }
+    @И("^В (поле|чек-бокс) \"(.*)\" введено значение \"(.*)\"$")
+    public void checkValueInField(String type,String name,String value){
+        boolean displayed=false;
+        switch (name) {
+            case "Наименование" -> {
+                Assertions.assertEquals(
+                        value, productsPage.getAddProductName()
+                                .getAttribute("value"),
+                        "Имя в поле Наименование не соответствует введенному");
+                displayed = true;
+            }
+            case "Тип" -> {
+                Assertions.assertTrue(productsPage
+                                .getAddType().getDomProperty("textContent")
+                                .contains(value),
+                        "Тип в поле Тип не соответствует введенному");
+                displayed = true;
 
+            }
+            case "Экзотический" -> {
+                if (value.contains("true")) {
+                    Assertions.assertTrue(
+                            productsPage.getAddExoticCheckBox()
+                                    .isSelected(),
+                            "Чек-бокс не активирован");
+                } else {
+                    Assertions.assertFalse(
+                            productsPage.getAddExoticCheckBox()
+                                    .isSelected(),
+                            "Чек-бокс активирован");
+                }
+                displayed = true;
+            }
+        }
+        Assertions.assertTrue(displayed,"Шаг проверки значений в "+type+name+" не работает");
+    }
     @И("Проверить, что в таблице есть строка со всеми данными {string} {string} {string}")
     public void checkAddProductData(String foodName, String type, String exotic){
         List<String> list = Arrays.asList(foodName,type,exotic);
