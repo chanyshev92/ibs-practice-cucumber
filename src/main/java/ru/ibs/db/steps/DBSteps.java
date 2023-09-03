@@ -53,8 +53,7 @@ public class DBSteps {
      */
     @After("@Db")
     public void after() {
-        foodsRepository=null;
-        dataSource=null;
+        FoodsRepository.setInstanceNull();
     }
 
     @И("Соединение с БД установлено")

@@ -29,13 +29,16 @@ public class FoodsRepository {
 
     private static FoodsRepository foodsRepository;
 
-    private static JdbcTemplate jdbcTemplate;
+    private JdbcTemplate jdbcTemplate;
 
     public static FoodsRepository getInstance(DataSource dataSource){
-        if (jdbcTemplate == null) {
+        if (foodsRepository == null) {
             foodsRepository=new FoodsRepository(dataSource);
         }
         return foodsRepository;
+    }
+    public static void setInstanceNull(){
+        foodsRepository=null;
     }
 
     private FoodsRepository(DataSource dataSource) {

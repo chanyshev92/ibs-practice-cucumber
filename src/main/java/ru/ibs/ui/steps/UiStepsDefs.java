@@ -70,13 +70,16 @@ public class UiStepsDefs {
      */
     @After("@Ui")
     public void after() {
+        //productsPage=null;
+        ProductsPage.setInstanceNull();
         chromeDriver.quit();
     }
 
     @И("Перейти на страницу \"Товары\"")
     public void getPage(){
         chromeDriver.get(baseUrl);
-        productsPage = new ProductsPage(chromeDriver);
+        //productsPage = new ProductsPage(chromeDriver);
+        productsPage=ProductsPage.getInstance(chromeDriver);
     }
 
     @И("Открыта страница \"Товары\"")

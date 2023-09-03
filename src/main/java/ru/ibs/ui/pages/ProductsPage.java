@@ -82,6 +82,23 @@ public class ProductsPage {
     String modalClass;
 
     /**
+     * Экземпляр класса для Singleton
+     */
+    static ProductsPage productsPage;
+    /***
+     * Метод получения
+     */
+    public static ProductsPage getInstance(WebDriver webDriver){
+        if(productsPage==null){
+            productsPage=new ProductsPage(webDriver);
+        }
+        return productsPage;
+    }
+    public static void setInstanceNull(){
+        productsPage=null;
+    }
+
+    /**
      * Конструктор с использованием PageFactory Pattern     *
      *
      * @param chromeDriver передаваемый драйвер
