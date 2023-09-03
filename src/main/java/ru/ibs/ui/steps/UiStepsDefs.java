@@ -1,27 +1,77 @@
 package ru.ibs.ui.steps;
 
+import io.cucumber.java.After;
+import io.cucumber.java.Before;
 import io.cucumber.java.ru.И;
 import org.junit.jupiter.api.Assertions;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.Color;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import ru.ibs.ui.pages.ProductsPage;
 
+import java.io.IOException;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Properties;
 import java.util.stream.Collectors;
-
-import static ru.ibs.ui.steps.UiHooks.*;
 
 /**
  * Класс с шагами графического интерфейса
  */
-public class UiSteps {
+public class UiStepsDefs {
 
     /**
      * Экземпляр страницы "Товары"
      */
     private ProductsPage productsPage;
+    /**
+     * Экземпляр Chrome Driver
+     */
+    private WebDriver chromeDriver;
+
+    /**
+     * Explicitly wait
+     */
+    private WebDriverWait wait;
+
+    /**
+     * Стартовый URL
+     */
+    private String baseUrl;
+
+    /**
+     * Выполняется перед каждым тестом
+     */
+    @Before("@Ui")
+    public void before() {
+        System.setProperty("webdriver.chrome.driver", System.getenv("CHROME_DRIVER"));
+        chromeDriver = new ChromeDriver();
+        wait = new WebDriverWait(chromeDriver, Duration.ofSeconds(10));
+        chromeDriver.manage().window().maximize();
+        chromeDriver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(10));
+        chromeDriver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+
+        Properties uiProperties = new Properties();
+        try {
+            uiProperties.load(getClass().getResourceAsStream("/ui.properties"));
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new IllegalArgumentException("Не удалось загрузить файл ui.properties",e);
+        }
+        baseUrl=uiProperties.getProperty("base.url");
+    }
+
+    /**
+     * Выполняется после каждого теста
+     */
+    @After("@Ui")
+    public void after() {
+        chromeDriver.quit();
+    }
 
     @И("Перейти на страницу \"Товары\"")
     public void getPage(){
