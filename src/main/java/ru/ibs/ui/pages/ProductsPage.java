@@ -6,13 +6,10 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static ru.ibs.ui.steps.UiHooks.wait;
 
 /**
  * Модель страницы "Товары"
@@ -148,16 +145,7 @@ public class ProductsPage {
                 .filter(s -> s.getText().equals(text)).toList().get(0);
     }
 
-    /**
-     * Ожидание прогрузки "модального" окна
-     */
-    public  void waitModalWindow(){
-        if(modalClass.equals("dialog")){
-            wait.until(ExpectedConditions.invisibilityOf(addProductHeader));
-        }else{
-            wait.until(ExpectedConditions.visibilityOf(addProductHeader));
-        }
-        modalClass=editModal.getAriaRole();
+    public void setModalClass(String ariaRole) {
+        modalClass=ariaRole;
     }
-
 }

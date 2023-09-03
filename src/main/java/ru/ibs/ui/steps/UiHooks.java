@@ -22,7 +22,7 @@ public class UiHooks {
     /**
      * Explicitly wait
      */
-    public static WebDriverWait wait;
+    static WebDriverWait wait;
 
     /**
      * Стартовый URL
@@ -32,7 +32,7 @@ public class UiHooks {
     /**
      * Выполняется перед каждым тестом
      */
-    @Before
+    @Before("@Ui")
     public void before() {
         System.setProperty("webdriver.chrome.driver", System.getenv("CHROME_DRIVER"));
         chromeDriver = new ChromeDriver();
@@ -54,7 +54,7 @@ public class UiHooks {
     /**
      * Выполняется после каждого теста
      */
-    @After
+    @After("@Ui")
     public void after() {
         chromeDriver.quit();
     }

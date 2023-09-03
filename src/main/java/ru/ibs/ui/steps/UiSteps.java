@@ -17,6 +17,7 @@ import static ru.ibs.ui.steps.UiHooks.*;
  * Класс с шагами графического интерфейса
  */
 public class UiSteps {
+
     /**
      * Экземпляр страницы "Товары"
      */
@@ -89,7 +90,8 @@ public class UiSteps {
     public void clickButtonWithText(String text){
         wait.until(ExpectedConditions.elementToBeClickable(productsPage.getButtonByText(text)));
         productsPage.getButtonByText(text).click();
-        productsPage.waitModalWindow();
+        waitModal();
+        //productsPage.waitModalWindow();
     }
 
     @И("Открыто всплывающее окно \"Добавление товара\"")
@@ -206,6 +208,11 @@ public class UiSteps {
 
     @И("Подождать модальное окно")
     public void waitModal(){
-       productsPage.waitModalWindow();
+        if(productsPage.getModalClass().equals("dialog")){
+            wait.until(ExpectedConditions.invisibilityOf(productsPage.getAddProductHeader()));
+        }else{
+            wait.until(ExpectedConditions.visibilityOf(productsPage.getAddProductHeader()));
+        }
+        productsPage.setModalClass(productsPage.getEditModal().getAriaRole());
     }
 }

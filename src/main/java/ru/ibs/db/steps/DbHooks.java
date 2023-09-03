@@ -24,7 +24,7 @@ public class DbHooks {
     /**
      * Выполняется перед каждым тестом
      */
-    @Before
+    @Before("@Db")
     public void before() {
         Properties dbProperties = new Properties();
 
@@ -48,7 +48,7 @@ public class DbHooks {
     /**
      * Выполняется после каждого теста
      */
-    @After
+    @After("@Db")
     public void after() {
         foodsRepository=null;
         dataSource=null;
