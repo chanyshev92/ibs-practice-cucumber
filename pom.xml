@@ -10,6 +10,13 @@
     <name>ibs-practice-cucumber</name>
 
     <properties>
+        <!-- Encoding -->
+        <encoding.type>UTF-8</encoding.type>
+        <project.build.sourceEncoding>${encoding.type}</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>${encoding.type}</project.reporting.outputEncoding>
+        <file.encoding>${encoding.type}</file.encoding>
+
+        <!-- Version -->
         <maven.compiler.target>17</maven.compiler.target>
         <maven.compiler.source>17</maven.compiler.source>
         <junit.version>5.9.3</junit.version>
@@ -130,6 +137,8 @@
                     <testFailureIgnore>true</testFailureIgnore>
                     <includes>**/*TestRunner.java</includes>
                     <argLine>
+                        -Xmx1024m
+                        -Dfile.encoding=${encoding.type}
                         -javaagent:"${settings.localRepository}/org/aspectj/aspectjweaver/${aspectj.version}/aspectjweaver-${aspectj.version}.jar"
                     </argLine>
                     <systemPropertyVariables>
