@@ -178,16 +178,19 @@ public class UiStepsDefs {
 
     }
 
-    @И("В поле \"Тип\" на выбор {int} варианта {string}, {string}")
-    public void checkType(int count,String string1, String string2){
 
-        Assertions.assertTrue(productsPage.getAllAddTypes().size() == count
-                        && productsPage.getAllAddTypes()
+    @И("^В поле \"Тип\" на выбор (\\d+) варианта:(.*)$")
+    public void checkTypeVariants(int count, String string){
+        List<String> list = Arrays.asList(string.replaceAll("\\s", "").trim().split(","));
+        System.out.println(list);
+        Assertions.assertEquals(list.size(), count,
+                "Проверь параметры передаваемые в \"Тип\"!");
+        Assertions.assertTrue(productsPage.getAllAddTypes()
                         .stream()
                         .map(WebElement::getText)
                         .collect(Collectors.toList())
-                        .containsAll(Arrays.asList(string1, string2)),
-                "Проверки на количество и/или содержимое поля 'Тип' не прошли");
+                        .containsAll(list),
+                "Проверки на содержимое поля 'Тип' не прошли");
     }
 
     @И("Установить чек-бокс \"Экзотический\" {string}")
